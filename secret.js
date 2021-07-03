@@ -1,31 +1,11 @@
 const express = require("express");
-const app = express();
-
-app.use(express.json());
-
-app.listen(80, () => console.log("Port80 listening..."));
-
-const v1 = require("./back/v1");
-const v2 = require("./back/v2");
-const digest = require("./secret");
-
-// root
-app.get("/", (req, res) => {
-  res.send("HEY, I am stocks machine");
-});
-
-app.use("/v1", v1);
-app.use("/v2", v2);
-app.use("/secret", digest);
-
-/*
-認証ページ願わくば別ページに
-*/
-
 const passport = require("passport");
 const Strategy = require("passport-http").DigestStrategy;
 const db = require("./db");
-// Create a new Express application.
+const logger = require("morgan");
+const router = express.Router();
+const app = express();
+// app.use(logger);
 
 passport.use(
   new Strategy({ qop: "auth" }, function (username, cb) {
@@ -41,10 +21,10 @@ passport.use(
   })
 );
 
-// Configure Express application.
-// app.use(express.logger());
+// Create a new Express application.
 
-app.get(
+
+router.get(
   "/",
   passport.authenticate("digest", { session: false }),
   function (req, res) {
@@ -52,5 +32,4 @@ app.get(
   }
 );
 
-
-module.exports = app;
+module.exports = router;
