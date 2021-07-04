@@ -1,37 +1,3 @@
-//  概要：.../v1/stocks/と.../v1/salesそれぞれでGET, POSTの処理をする
-
-// TS使いたい。。
-// 認証のやつと結合できない？
-// ファイルを分割できないか？
-
-// ...v1/...
-//    v1/stocksでは
-//   在庫の追加と確認を行う
-//   最後にDELETEで全削除
-
-//    v1/salesでは
-//   売り上げの照会と販売を行う
-
-// ..v2/...
-//   v1の別バージョン
-//   操作としてはほぼ同じ
-
-// TypeScript の環境構築で詰まったからとりあえずJS
-// /v1/stocks/ で使う
-// type Product = {
-//   name: string; //必須
-//   amount?: number; //任意
-//   price?: number; //任意
-// };
-
-// /v1/stocks/のパスではpriceがあったらエラーにしたい
-// /v1/sales/ で売る時使う？
-// type OrderedProduct = {
-//   name: string; //必須
-//   amount?: number; //任意
-//   price?: number; //任意
-// };
-
 const Joi = require("joi");
 const express = require("express");
 const router = express.Router();
@@ -152,13 +118,10 @@ router.post("/sales", (req, res) => {
   if (amount && price) {
     sales += amount * price;
   }
-  // headerのLocationを.../v1/sales/:nameにしたい
-  // ・・・
 
   res.header("Location", "/sales/" + name).send(postedJSON); // 送られたJSONをそのまま返す
 });
 
-//売り上げ照会（GET）  .../v1/sales
 //売り上げすべて参照
 router.get("/sales/", (req, res) => {
   //小数点第二位まで表示

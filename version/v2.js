@@ -15,7 +15,7 @@ const stocks = [
 // 小計
 let subtotal = 0;
 
-// POSTされるJSONのバリデーションを共通化
+// POSTされるJSONのバリデーション
 const post_validation = (posted) => {
   const schema = Joi.object({
     name: Joi.string()
@@ -117,7 +117,6 @@ router.post("/sales", (req, res) => {
   res.status(201).send(req.body); // 送られたJSONをそのまま返す
 });
 
-//売り上げ照会（GET）  .../sales
 //売り上げすべて参照
 router.get("/sales", (req, res) => {
   res.status(200).send(JSON.stringify({ subtotal })); //{"sales": sales}
