@@ -1,35 +1,59 @@
 const express = require("express");
-const passport = require("passport");
-const Strategy = require("passport-http").DigestStrategy;
-const db = require("./db");
-const logger = require("morgan");
+const bcrypt = require("bcrypt");
 const router = express.Router();
-const app = express();
-// app.use(logger);
 
-passport.use(
-  new Strategy({ qop: "auth" }, function (username, cb) {
-    db.users.findByUsername(username, function (err, user) {
-      if (err) {
-        return cb(err);
-      }
-      if (!user) {
-        return cb(null, false);
-      }
-      return cb(null, user, user.password);
-    });
-  })
-);
+router.use(express.json());
 
-// Create a new Express application.
+const users = [];
 
+// /secret
+router.get("/", (req, res) => {
+  res.send(
+    JSON.stringify({
+      status: "401 Unauthorized",
+      message: "POST authorized name and password",
+    })
+  );
+});
 
-router.get(
-  "/",
-  passport.authenticate("digest", { session: false }),
-  function (req, res) {
-    res.json({ username: req.user.username, email: req.user.emails[0].value });
+router.post("/", async (req, res) => {
+  //aws, candidateなら登録なしでSUCCESS
+  if (req.body.name === "aws" && req.body.password === "candidate")
+    return res.status(200).send("SUCCESS");
+  //それ以外のユーザーとパスワードなら登録の有無を確認
+  const user = users.find((user) => user.name === req.body.name);
+  if (user == null) {
+    return res.status(400).send("Cannot find user");
   }
-);
+  try {
+    if (await bcrypt.compare(req.body.password, user.password)) {
+      res.send("SUCESS");
+    } else {
+      res.send("Not Allowed");
+    }
+  } catch {
+    res.status(500).send();
+  }
+});
+
+// 新規ユーザーの登録（{name: aws, password: candidate}以外）
+router.post("/signup", async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = { name: req.body.name, password: hashedPassword };
+    users.push(user);
+    res
+      .status(201)
+      .send(
+        "Sign up Succeeded with name '" +
+          req.body.name +
+          "' and passoword '" +
+          req.body.password +
+          "'"
+      );
+  } catch {
+    res.status(500).send();
+  }
+});
 
 module.exports = router;

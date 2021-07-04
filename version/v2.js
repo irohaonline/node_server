@@ -1,28 +1,4 @@
-// // ここから RESTfulAPI              //////////////////////////////////////////////////////////////////////////////
-/*
-自動販売機のイメージ
-クライアントとJSONをやり取りして品数確認、品追加、販売ができる
-
-参考：
-https://youtu.be/pKd0Rpw7O48
-https://youtu.be/_tk4mpUdO1Y
-
-
-../stock
-GETで品数確認、
-POSTで新規品追加ができる {name:  , quantity:  } or {name:  }
-../stock/:id
-parmに応じた飲み物の情報が確認できる
-DELETE でidに一致する飲み物を削除
-
-../sales
-GETで小計確認
-POSTでクライアントが注文できる {name:  , quantity:  }
-
-*/
-
-
-
+//version2
 
 const Joi = require("joi");
 const express = require("express");
@@ -33,7 +9,7 @@ const stocks = [
   { id: 1, name: "Cola", quantity: 3, price: 100 },
   { id: 2, name: "Pepsi", quantity: 3, price: 150 },
   { id: 3, name: "Ramune", quantity: 3, price: 120 },
-  { id: 3, name: "Tea", quantity: 3, price: 110 },
+  { id: 4, name: "Tea", quantity: 3, price: 110 },
 ];
 
 // 小計
@@ -50,8 +26,6 @@ const post_validation = (posted) => {
   });
   return schema.validate(posted);
 };
-
-
 
 // GET /stocks/
 //在庫すべて参照
